@@ -6,8 +6,8 @@
     <title>Document</title>
 </head>
 <body>
-<?php include 'components/nav_bar.php'; ?>
-    <a href="/pages/choose_login.php">Login</a>
-    <?php include 'components/footer.php'; ?>
+    <a href="/pages/login.php">User Login</a>
+    <br>
+    <a href="/pages/admin_login.php">Admin Login</a>
 </body>
 </html>

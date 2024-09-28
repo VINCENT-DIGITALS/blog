@@ -5,8 +5,35 @@ $mydb = new myDB();
 
 
 if (isset($_POST['find_user'])) {
+    $email = $_POST['email'];
+    $password = $_POST['password'];
 
-    $mydb->loginUser('users', $_POST['email'], $_POST['password']);
+    $result = $mydb->loginUser('users', '*', ['email' => $email]);
+    if ($password === $result['password']) {
+        echo "Login Success";
+    } else {
+        echo "Invalid emails or password";
+    }
+}
+
+
+
+if (isset($_POST['find_admin'])) { //Login
+    $email = $_POST['email'];
+    $password = $_POST['password'];
+
+    $result = $mydb->loginAdmin('admin', '*', ['email' => $email]);
+    if ($password === $result['password']) {
+        echo "Login Success";
+    } else {
+        echo "Invalid emails or password";
+    }
+}
+
+if (isset($_POST['add_user'])) { //Sign up
+    unset($_POST['add_user']);
+    $mydb->insert('users', [...$_POST]);
+    header("location: ../");
 }
 
 if (isset($_POST['add_post'])) {

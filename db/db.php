@@ -43,27 +43,6 @@ final class myDB
             die("Error while inserting data!. <br>" . $e);
         }
     }
-    public function select($table, $row = "*", $where = NULL)
-    {
-        try {
-            if (!is_null($where)) {
-                $cond = $types = "";
-                foreach ($where as $key => $value) {
-                    $cond .= $key .= "? AND ";
-                    $types .= substr(gettype($value), 0, 1);
-                }
-                $conn = substr($cond, 0, -4);
-                $stmt = $this->conn->prepare("SELECT $row FROM $table WHERE $cond");
-                $stmt->bind_param($types, ...array_values($where));
-            } else {
-                $stmt = $this->conn->prepare("SELECT $row FROM $table");
-            }
-            $stmt->execute();
-            $this->res = $stmt->get_result();
-        } catch (Exception $e) {
-            die("Error requesting Data!. <br>" . $e);
-        }
-    }
     public function update($table, $data, $where)
     {
         try {
@@ -107,33 +86,89 @@ final class myDB
             die("Error while deleting data: " . $e->getMessage());
         }
     }
-    public function loginUser($table, $email, $password)
+    public function select($table, $row = "*", $where = NULL)
     {
         try {
-            // Prepare the SQL statement with placeholders
-            $select_query = $this->conn->prepare("SELECT * FROM $table WHERE email = ? AND password = ?");
-
-            // Bind the input parameters to the prepared statement
-            // "ss" specifies the types of the variables: both are strings here
-            $select_query->bind_param("ss", $email, $password);
-
-            // Execute the prepared statement
-            $select_query->execute();
-
-            // Get the result
-            $result = $select_query->get_result();
-
-            // Check if any row was returned
-            if ($result->num_rows > 0) {
-                echo "Login Success";
+            if (!is_null($where)) {
+                $cond = $types = "";
+                foreach ($where as $key => $value) {
+                    $cond .= $key .= "? AND ";
+                    $types .= substr(gettype($value), 0, 1);
+                }
+                $conn = substr($cond, 0, -4);
+                $stmt = $this->conn->prepare("SELECT $row FROM $table WHERE $cond");
+                $stmt->bind_param($types, ...array_values($where));
             } else {
-                echo "Failed";
+                $stmt = $this->conn->prepare("SELECT $row FROM $table");
             }
-
-            // Close the statement
-            $select_query->close();
+            $stmt->execute();
+            $this->res = $stmt->get_result();
         } catch (Exception $e) {
-            echo json_encode(['status' => 'error', 'message' => 'Error processing request: ' . $e->getMessage()]);
+            die("Error requesting Data!. <br>" . $e);
+        }
+    }
+    public function loginUser($table, $row = "*", $where = NULL)
+    {
+        try {
+            if (!is_null($where)) {
+                $cond = $types = "";
+                foreach ($where as $key => $value) {
+                    $cond .= $key . " = ? AND ";
+                    $types .= substr(gettype($value), 0, 1);
+                }
+                $conn = substr($cond, 0, -4); // Remove the last ' AND '
+                $query = "SELECT $row FROM $table WHERE $conn"; // Build query
+                $stmt = $this->conn->prepare($query);
+                $stmt->bind_param($types, ...array_values($where));
+            } else {
+                $stmt = $this->conn->prepare("SELECT $row FROM $table");
+            }
+    
+            $stmt->execute();
+            $this->res = $stmt->get_result();
+    
+            // Check if any row was returned
+            if ($this->res->num_rows > 0) {
+                return $this->res->fetch_assoc(); // Return the user data
+            } else {
+                return null; // No user found
+            }
+        } catch (Exception $e) {
+            error_log("Error processing request: " . $e->getMessage());
+            return null; // In case of error, return null
+        }
+    }
+    
+
+    public function loginAdmin($table, $row = "*", $where = NULL)
+    {
+        try {
+            if (!is_null($where)) {
+                $cond = $types = "";
+                foreach ($where as $key => $value) {
+                    $cond .= $key . " = ? AND ";
+                    $types .= substr(gettype($value), 0, 1);
+                }
+                $conn = substr($cond, 0, -4); // Remove the last ' AND '
+                $query = "SELECT $row FROM $table WHERE $conn"; // Build query
+                $stmt = $this->conn->prepare($query);
+                $stmt->bind_param($types, ...array_values($where));
+            } else {
+                $stmt = $this->conn->prepare("SELECT $row FROM $table");
+            }
+    
+            $stmt->execute();
+            $this->res = $stmt->get_result();
+    
+            // Check if any row was returned
+            if ($this->res->num_rows > 0) {
+                return $this->res->fetch_assoc(); // Return the user data
+            } else {
+                return null; // No user found
+            }
+        } catch (Exception $e) {
+            error_log("Error processing request: " . $e->getMessage());
+            return null; // In case of error, return null
         }
     }
 }
