@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link rel="stylesheet" href="/css/main.css">
 </head>
-<body>
-    <a href="/pages/login.php">User Login</a>
-    <br>
-    <a href="/pages/admin_login.php">Admin Login</a>
-</body>
+
+
+<footer class="footer">
+    <p>© 2024 Pinoy Blogs | All Rights Reserved</p>
+
+</footer>
+
 </html>

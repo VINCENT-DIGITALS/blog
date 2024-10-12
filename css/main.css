@@ -1,123 +1,329 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-family: 'Poppins', sans-serif;
+
+  overflow-x: hidden;
+}
+
 * {
-   box-sizing: border-box;
- }
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
- body {
-   margin: 0;
-   font-family: Arial, sans-serif;
- }
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  /* Ensures the root div takes the full height of the viewport */
+}
 
- .navbar {
-   background-color: #333;
-   color: white;
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   padding: 10px 20px;
- }
+/* Main content wrapper to push the footer down */
+.main-content {
+  flex-grow: 1;
+  padding: 20px;
+  /* Add some padding to avoid footer overlap */
+}
 
- .container {
-   display: flex;
-   justify-content: space-between;
-   align-items: center;
-   width: 100%;
- }
 
- .logo {
-   font-size: 1.5rem;
-   font-weight: bold;
-   text-decoration: none;
-   color: white;
- }
 
- .nav-links {
-   list-style: none;
-   display: flex;
-   margin: 0;
-   padding: 0;
- }
 
- .nav-links li {
-   margin-left: 20px;
- }
 
- .nav-links a {
-   text-decoration: none;
-   color: white;
-   font-size: 1rem;
- }
 
- .menu-toggle {
-   display: none;
-   flex-direction: column;
-   justify-content: space-around;
-   height: 24px;
-   width: 30px;
-   background: none;
-   border: none;
-   cursor: pointer;
- }
+/* Navbar Styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 
- .bar {
-   height: 3px;
-   width: 100%;
-   background-color: white;
- }
+  padding: 1rem 2rem;
+  background-color: #1f2833;
+  color: #c5c6c7;
+  z-index: 1000;
+  /* High z-index to keep it above other elements */
+}
 
- @media (max-width: 768px) {
-   .nav-links {
-     display: none;
-     flex-direction: column;
-     position: absolute;
-     top: 60px;
-     left: 0;
-     width: 100%;
-     background-color: #333;
-   }
+.logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: #66fcf1;
+}
 
-   .nav-links.show {
-     display: flex;
-   }
+/* Hamburger Icon */
+.hamburger {
+  font-size: 2rem;
+  background: none;
+  border: none;
+  color: #c5c6c7;
+  cursor: pointer;
+  display: none;
+}
 
-   .menu-toggle {
-     display: flex;
-   }
+/* Nav Links */
+.nav-links {
+  display: flex;
+  list-style: none;
+}
 
-   .nav-links li {
-     margin: 20px 0;
-     text-align: center;
-   }
- }
+.nav-links li {
+  margin-left: 2rem;
+}
+
+.nav-links li a {
+  text-decoration: none;
+  color: #c5c6c7;
+  font-size: 1.2rem;
+  padding: 0.5rem 1rem;
+  transition: color 0.3s ease-in-out;
+}
+
+.nav-links li a:hover {
+  color: #66fcf1;
+}
+
+/* Active Link */
+.nav-links li.active a {
+  color: #66fcf1;
+  border-bottom: 2px solid #66fcf1;
+}
+
+/* Responsive Menu */
+@media (max-width: 768px) {
+  .hamburger {
+    display: block;
+  }
+
+  .nav-links {
+    position: absolute;
+    top: 70px;
+    right: 0;
+    background-color: #1f2833;
+    width: 100%;
+    height: calc(100vh - 70px);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease-in-out;
+    transform: translateY(-100%);
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .nav-links.open {
+    transform: translateY(0);
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .nav-links li {
+    margin: 1rem 0;
+  }
+
+  .nav-links li a {
+    font-size: 1.5rem;
+  }
+}
+
+
+
 
 
 
 /* Sticky Footer Style */
 .footer {
-   background-color: #1f2833;
-   color: #c5c6c7;
-   text-align: center;
-   padding: 0.5rem;
-   font-size: 1rem;
-   width: 100%;
-   margin-top: auto;
- 
-   position: absolute;
- }
- 
- /* Ensure links are aligned properly in a row */
- .footer p {
-   margin: 0.5rem 0;
- }
- 
- .footer a {
-   color: #66fcf1;
-   text-decoration: none;
-   transition: color 0.3s ease;
-   margin: 0 5px;
- }
- 
- .footer a:hover {
-   color: #45a29e;
- }
- 
- 
+  background-color: #1f2833;
+  color: #c5c6c7;
+  text-align: center;
+  padding: 0.5rem;
+  font-size: 1rem;
+  width: 100%;
+  margin-top: auto;
+
+  position: relative;
+}
+
+/* Ensure links are aligned properly in a row */
+.footer p {
+  margin: 0.5rem 0;
+}
+
+.footer a {
+  color: #66fcf1;
+  text-decoration: none;
+  transition: color 0.3s ease;
+  margin: 0 5px;
+}
+
+.footer a:hover {
+  color: #45a29e;
+}
+
+
+
+/* Container for the login options */
+.containerChooseLogin {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+}
+
+/* Styling the login options */
+.login-options {
+  text-align: center;
+  background-color: #fff;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 300px;
+}
+
+/* Styling for buttons (links) */
+.btn {
+  display: block;
+  margin: 10px 0;
+  padding: 15px;
+  text-decoration: none;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 5px;
+  font-size: 16px;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #45a049;
+}
+
+/* Secondary button styling */
+.btn.secondary {
+  background-color: #2196F3;
+}
+
+.btn.secondary:hover {
+  background-color: #1E88E5;
+}
+
+/* Admin button styling */
+.btn.admin {
+  background-color: #FF5722;
+}
+
+.btn.admin:hover {
+  background-color: #E64A19;
+}
+
+
+
+
+
+
+
+
+/* -------------------------------------------------------------------------------- */
+/* Log in Loader on success */
+
+.loading {
+  border: 4px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 4px solid #3498db;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+
+/* ------------------------------------------------ */
+/* Search and Filter Styles */
+.search-container {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.search-container input[type="text"] {
+  width: 100%;
+  max-width: 500px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  font-size: 16px;
+}
+
+.search-container button {
+  padding: 10px 20px;
+  margin-left: 10px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+}
+
+.search-container button:hover {
+  background-color: #0056b3;
+}
+
+
+/* Grid Layout */
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* Blog Card Styles */
+.blog-card {
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.blog-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.blog-card h3 {
+  margin-top: 0;
+  font-size: 22px;
+  color: #333;
+}
+
+.blog-card p {
+  color: #666;
+  line-height: 1.6;
+}
+
+.blog-card .author {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #555;
+}
+
+.blog-card .date {
+  font-size: 12px;
+  color: #aaa;
+  margin-bottom: 15px;
+}
+
+.blog-card a {
+  color: #007BFF;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.blog-card a:hover {
+  text-decoration: underline;
+}
