@@ -320,7 +320,7 @@ $(document).ready(function () {
 
     // Handle share button click
     $('#gridBlogs').on('click', '.share-button', function () {
-        alert('Post shared!');
+        alert('Copied the link for post!');
         // Implement share functionality
     });
 });
