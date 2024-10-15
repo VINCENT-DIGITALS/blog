@@ -92,20 +92,20 @@
 </head>
 
 <body>
-    <form id="loginForm" method="post" action="../../db/request.php">
+    <form id="loginForm" method="post" action="/Blog/db/request.php">
         <h2>User Login</h2>
         
         <input type="text" id="email" name="email" placeholder="Email" required><br>
         <input type="password" id="password" name="password" placeholder="Password" required><br>
         <div id="responseMessage" style="display: none;"></div>
         <button type="submit" name="find_user">Login</button><br>
-        <a href="../../index.php">Guest</a><br>
-        <a href="register.php">Sign up</a><br>
+        <a href="/Blog/pages/auth/logout.php">Guest</a><br>
+        <a href="/Blog/pages/auth/register.php">Sign up</a><br>
     </form>
 
 
 
-    <script src="../../js/main.js"></script>
+    <script src="/Blog/js/main.js"></script>
 </body>
 
 </html>

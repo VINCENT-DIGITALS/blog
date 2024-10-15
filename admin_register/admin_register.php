@@ -110,7 +110,7 @@
 </head>
 
 <body>
-    <form id="admin_register_form" method="post" action="../db/request.php">
+    <form id="admin_register_form" method="post" action="/Blog/db/request.php">
         <h2>Admin Sign Up</h2>
         <input type="text" id="Username" name="Username" placeholder="Username" required><br>
         <input type="text" id="email" name="email" placeholder="Email" required><br>
@@ -118,13 +118,13 @@
         <input type="password" id="password" name="Cpassword" placeholder="Confirm Password" required><br>
         <div id="responseMessage" style="display: none;"></div>
         <button type="submit" name="add_admin">Login</button><br>
-        <a class="guest" href="../../index.php">Guest</a><br>
-        <div class="footer">Already have an account? <a href="/pages/auth/admin_login.php">Login here</a></div>
+        <a class="guest" href="/Blog/index.php">Guest</a><br>
+        <div class="footer">Already have an account? <a href="/Blog/pages/auth/admin_login.php">Login here</a></div>
     </form>
 
 
 
-    <script src="../js/main.js"></script>
+    <script src="/Blog/js/main.js"></script>
 </body>
 
 </html>

@@ -43,6 +43,72 @@ final class myDB
             die("Error while inserting data!. <br>" . $e);
         }
     }
+    public function updateLikes($post_id, $update)
+    {
+        try {
+            $stmtupdate = $this->conn->prepare("UPDATE posts SET likes_count = $update WHERE id = ?");
+            $stmtupdate->bind_param("i", $post_id);
+    
+            if ($stmtupdate->execute()) {
+                error_log("Successfully updated likes for post ID: $post_id.");
+            } else {
+                error_log("Failed to update likes for post ID: $post_id");
+            }
+    
+            $stmtupdate->close();
+        } catch (Exception $e) {
+            error_log("Error updating likes count: " . $e->getMessage());
+        }
+    }
+    
+    
+
+    public function updateLikesCount($postId)
+    {
+        try {
+            // Query to update the likes_count field based on the number of entries in the likes table
+            $stmt = $this->conn->prepare("
+                UPDATE posts 
+                SET likes_count = (SELECT COUNT(*) FROM likes WHERE post_id = ?)
+                WHERE id = ?
+            ");
+            $stmt->bind_param("ii", $postId, $postId);
+            $stmt->execute();
+            $stmt->close();
+        } catch (Exception $e) {
+            die("Error updating likes count! <br>" . $e);
+        }
+    }
+    public function getLikesCount($post_id)
+    {
+        try {
+            // Ensure post_id is an integer
+            if (!is_numeric($post_id) || intval($post_id) != $post_id) {
+                throw new Exception("Invalid post_id provided. It must be an integer.");
+            }
+
+            // Cast post_id to integer
+            $post_id = intval($post_id);
+
+            // Query to count the number of likes for the post_id
+            $stmt = $this->conn->prepare("SELECT COUNT(*) as likes_count FROM likes WHERE post_id = ?");
+            $stmt->bind_param("i", $post_id);
+            $stmt->execute();
+
+            // Fetch the result
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            $likes_count = $row['likes_count'];
+
+            $stmt->close();
+
+            return $likes_count;  // Return the number of likes
+        } catch (Exception $e) {
+            die("Error fetching likes count. <br>" . $e->getMessage());
+        }
+    }
+
+
     public function update($table, $data, $where)
     {
         try {
@@ -86,41 +152,47 @@ final class myDB
             die("Error while deleting data: " . $e->getMessage());
         }
     }
-    public function select($table, $row = "*", $where = NULL, $search = NULL)
-    {
-        try {
-            if (!is_null($where)) {
-                // Handle exact match conditions (WHERE clause with equal conditions)
-                $cond = $types = "";
-                foreach ($where as $key => $value) {
-                    $cond .= "$key = ? AND ";
-                    $types .= substr(gettype($value), 0, 1);
-                }
-                $cond = substr($cond, 0, -4); // Remove trailing 'AND'
-                $stmt = $this->conn->prepare("SELECT $row FROM $table WHERE $cond");
-                $stmt->bind_param($types, ...array_values($where));
-            } elseif (!is_null($search)) {
-                // Handle search conditions (LIKE clause for search)
-                $cond = $types = "";
-                foreach ($search as $key => $value) {
-                    $cond .= "$key LIKE ? OR ";
-                    $types .= substr(gettype($value), 0, 1);
-                    $search[$key] = "%" . $value . "%";  // Add wildcard % for LIKE query
-                }
-                $cond = substr($cond, 0, -4); // Remove trailing 'OR'
-                $stmt = $this->conn->prepare("SELECT $row FROM $table WHERE $cond");
-                $stmt->bind_param($types, ...array_values($search));
-            } else {
-                // No conditions, select all
-                $stmt = $this->conn->prepare("SELECT $row FROM $table");
-            }
 
+    public function select($table, $row = "*", $where = NULL, $search = NULL) {
+        try {
+            $conditions = [];
+            $types = "";
+    
+            // Exact matches (WHERE clause)
+            if (!is_null($where)) {
+                foreach ($where as $key => $value) {
+                    $conditions[] = "$key = ?";
+                    $types .= substr(gettype($value), 0, 1);
+                }
+            }
+    
+            // Search (LIKE clause)
+            if (!is_null($search)) {
+                foreach ($search as $key => $value) {
+                    $conditions[] = "$key LIKE ?";
+                    $types .= substr(gettype($value), 0, 1);
+                    $search[$key] = "%" . $value . "%";
+                }
+            }
+    
+            // Build the query dynamically based on conditions
+            $query = "SELECT $row FROM $table";
+            if (!empty($conditions)) {
+                $query .= " WHERE " . implode(" AND ", $conditions);
+            }
+    
+            $stmt = $this->conn->prepare($query);
+            if (!empty($conditions)) {
+                $stmt->bind_param($types, ...array_values(array_merge($where ?? [], $search ?? [])));
+            }
+    
             $stmt->execute();
             $this->res = $stmt->get_result();
         } catch (Exception $e) {
             die("Error requesting Data!. <br>" . $e);
         }
     }
+    
 
 
     // Helper function to check if a record exists

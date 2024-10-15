@@ -106,19 +106,19 @@
 </head>
 
 <body>
-    <form id="adminloginForm" method="post" action="../../db/request.php">
+    <form id="adminloginForm" method="post" action="/Blog/db/request.php">
         <h2>Admin Login</h2>
         <input type="text" id="email" name="email" placeholder="Email" required><br>
         <input type="password" id="password" name="password" placeholder="Password" required><br>
         <div id="responseMessage" style="display: none;"></div>
         <button type="submit" name="find_admin">Login</button><br>
-        <a class="guest" href="../../index.php">Guest</a><br>
+        <a class="guest" href="/Blog/index.php">Guest</a><br>
         
     </form>
 
     
 
-    <script src="../../js/main.js"></script>
+    <script src="/Blog/js/main.js"></script>
 </body>
 
 </html>
