@@ -19,7 +19,7 @@
         $user_id = null;
         $isLoggedIn = false; // Not logged in if 'user_id' is not set
         $isAdmin = null; // Not an admin if not logged in
-        $visitor_id = random_int(1000000, 9999999999); // Generates a random integer in the specified range
+        $visitor_id = random_int(1000, 9999); // Generates a random integer in the specified range
 
     }
 
@@ -30,6 +30,7 @@
         var isAdmin = <?php echo json_encode($isAdmin); ?>;
         var visitorid = <?php echo json_encode($visitor_id); ?>;
     </script>
+
     <main>
         <div id="gridBlogs">
             <!-- The blog post content will go here, dynamically loaded by the script -->

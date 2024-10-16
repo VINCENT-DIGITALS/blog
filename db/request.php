@@ -36,8 +36,8 @@ if (isset($_POST['like_post'])) {
 
     // Check if the user is authenticated or is a visitor with a valid session
     if ($userId || $visitorId) {
-        // Ensure visitor_id is not null or empty before proceeding
-        if ($visitorId === null && $userId === null) {
+        // Ensure at least one identifier (userId or visitorId) is not null or empty before proceeding
+        if ($userId === null && $visitorId === null) {
             echo json_encode(['success' => false, 'error' => 'You must be logged in or have a valid session to like posts.']);
             exit;
         }
@@ -49,7 +49,7 @@ if (isset($_POST['like_post'])) {
             $mydb->select('likes', '*', ['post_id' => $postId, 'visitor_id' => $visitorId]);
         }
 
-        $likeExists = $mydb->res->num_rows > 0;
+        $likeExists = $mydb->res->num_rows > 0;  // Check if like exists
 
         if ($likeExists) {
             // Unlike the post (delete the existing like entry)
@@ -59,17 +59,17 @@ if (isset($_POST['like_post'])) {
                 $mydb->delete('likes', ['post_id' => $postId, 'visitor_id' => $visitorId]);
             }
             $mydb->updateLikes($postId, 'likes_count - 1');
-        } else if (!$likeExists) {
+        } else {
             // Like the post (insert a new like entry)
             $data = ['post_id' => $postId];
-            if ($userId && !$visitorId) {
+            if ($userId) {
                 $data['user_id'] = $userId;
-            } else if ($visitorId && !$userId) {
+            } else if ($visitorId) {
                 $data['visitor_id'] = $visitorId;
             }
             $mydb->insert('likes', $data);
 
-            $mydb->updateLikes($postId, 'likes_count + 1');
+            $mydb->updateLikes($postId, 'likes_count + 1');  // Increase the like count
         }
 
         // Fetch the updated likes count

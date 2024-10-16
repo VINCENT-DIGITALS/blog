@@ -27,7 +27,7 @@ $blogs = $mydb->select('posts');
         $user_id = null;
         $isLoggedIn = false; // Not logged in if 'user_id' is not set
         $isAdmin = null; // Not an admin if not logged in
-        $visitor_id = random_int(1000000, 9999999999); // Generates a random integer in the specified range
+        $visitor_id = random_int(1000, 9999); // Generates a random integer in the specified range
 
     }
 

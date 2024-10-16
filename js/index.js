@@ -62,12 +62,12 @@ $(document).ready(function () {
                                 <p>${contentToShow}</p>
                                 
                                 <p><strong>Date:</strong> ${data['created_at']}</p>
-                                ${!isAdmin ? `
+                               
                                 <div class="like-share">
-                                    <button class="like-button">Like (${data['likes_count']})</button> <!-- Display the number of likes -->
+                                    ${!isAdmin ? ` <button class="like-button">Like (${data['likes_count']})</button> <!-- Display the number of likes -->  ` : ''}
                                     <button class="share-button">Share</button>
                                 </div>
-                                ` : ''}
+                               
                                 <div class="comments-section">
                                     <h4>Comments:</h4>
                                     ${isLoggedIn && !isAdmin ? `
