@@ -109,6 +109,7 @@ $(document).ready(function () {
                         var comment = commentTextarea.val();
                         var postId = $(this).closest('.blog-card').data('post-id');
                         var commentSection = $(this).closest('.comments-section').find('.comments-list');
+                        var moreCommentsDiv = commentSection.find('.more-comments');
 
                         if (comment) {
                             $.ajax({
@@ -127,9 +128,24 @@ $(document).ready(function () {
                                             // Remove "No comments yet" if it exists
                                             commentSection.find('p:contains("No comments yet")').remove();
 
-                                            // Add the new comment to the top of the comment list
+                                            // Create a new comment HTML
                                             var newCommentHtml = `<p><strong>${response.username}:</strong> ${comment}</p>`;
-                                            commentSection.prepend(newCommentHtml);
+
+                                            // Check if the .more-comments div exists
+                                            if (moreCommentsDiv.length === 0) {
+                                                // Create the scrollable div if it doesn't exist
+                                                commentSection.prepend('<div class="more-comments" style="max-height: 150px; overflow-y: auto;"></div>');
+                                                moreCommentsDiv = commentSection.find('.more-comments');
+                                            }
+
+                                            // Add the new comment to the scrollable area
+                                            moreCommentsDiv.prepend(newCommentHtml);
+
+                                            // If the new comment is the first one, show "Show More" link
+                                            if (moreCommentsDiv.children().length > 1 && commentSection.find('.show-more-comments').length === 0) {
+                                                commentSection.append(`<a href="#" class="show-more-comments" data-post-id="${postId}">Show More</a>`);
+                                                commentSection.append(`<a href="#" class="show-less-comments" data-post-id="${postId}" style="display: none;">Show Less</a>`);
+                                            }
 
                                             // Clear the comment textarea
                                             commentTextarea.val('');
@@ -197,7 +213,8 @@ $(document).ready(function () {
                     $('#gridBlogs').on('click', '.share-button', function () {
                         var postId = $(this).closest('.blog-card').data('post-id');
                         // var postTitle = $(this).closest('.blog-card').find('h3').text(); 
-                        var shareUrl = `http://192.168.43.128/Blog/pages/blog.php?id=${postId}`;
+                        var baseUrl = window.location.origin; // Get the base URL dynamically
+                        var shareUrl = `${baseUrl}/Blog/pages/blog.php?id=${postId}`;
 
                         // Share the blog (copy link to clipboard for example)
                         navigator.clipboard.writeText(shareUrl).then(function () {
@@ -218,7 +235,6 @@ $(document).ready(function () {
             }
         });
     }
-
     // Function to load comments for a specific post
     function loadComments(postId) {
         console.log(`Attempting to load comments for post ID: ${postId}`);
@@ -248,34 +264,33 @@ $(document).ready(function () {
                         return;
                     }
 
-                    // console.log(`Parsed comments for post ID ${postId}:`, comments);
-
                     let commentHtml = '';
 
                     if (comments.length === 0) {
-                        // console.log(`No comments found for post ID ${postId}`);
                         commentHtml = '<p>No comments yet.</p>';
                     } else {
-                        // Only show the first comment initially
-                        commentHtml += `<p><strong>${comments[0].username}:</strong> ${comments[0].comment}</p>`;
+                        // Create a scrollable div for comments
+                        commentHtml += `<div class="more-comments" style="max-height: 150px; overflow-y: auto;">`;
 
-                        // If there are more comments, add a "Show More" link
-                        if (comments.length > 1) {
+                        // Append all comments inside the scrollable area
+                        comments.forEach(comment => {
+                            commentHtml += `<p><strong>${comment.username}:</strong> ${comment.comment}</p>`;
+                        });
+
+                        commentHtml += `</div>`;
+
+                        // Add "Show More" and "Show Less" links if there are more than 4 comments
+                        if (comments.length > 4) {
                             commentHtml += `<a href="#" class="show-more-comments" data-post-id="${postId}">Show More</a>`;
-                            commentHtml += `<div class="more-comments" style="display: none;">`;
-
-                            // Loop through remaining comments and hide them initially
-                            for (let i = 1; i < comments.length; i++) {
-                                commentHtml += `<p><strong>${comments[i].username}:</strong> ${comments[i].comment}</p>`;
-                            }
-
-                            commentHtml += `</div>`;
                             commentHtml += `<a href="#" class="show-less-comments" data-post-id="${postId}" style="display: none;">Show Less</a>`;
                         }
                     }
 
-                    // Use the correct ID to append comments
+                    // Append the comments to the correct element by post ID
                     $(`#comments-${postId}`).html(commentHtml);
+
+                    // By default, hide comments beyond the first 4
+                    $(`#comments-${postId} .more-comments p:gt(3)`).hide();
                 } catch (error) {
                     console.error(`Error parsing JSON for post ID ${postId}:`, error);
                     console.error('Raw response:', result);
@@ -289,26 +304,22 @@ $(document).ready(function () {
     }
 
     // Event listener for Show More functionality for comments
-    $('#gridBlogs').on('click', '.show-more-comments', function (event) {
-        event.preventDefault();
+    $(document).on('click', '.show-more-comments', function (e) {
+        e.preventDefault();
         var postId = $(this).data('post-id');
-
-        // Show all comments and switch to "Show Less"
-        $(this).siblings('.more-comments').show();
-        $(this).siblings('.show-less-comments').show();
-        $(this).hide();
+        $(`#comments-${postId} .more-comments p`).slideDown();
+        $(this).hide(); // Hide "Show More"
+        $(this).siblings('.show-less-comments').show(); // Show "Show Less"
     });
 
-    // Event listener for Show Less functionality for comments
-    $('#gridBlogs').on('click', '.show-less-comments', function (event) {
-        event.preventDefault();
+    $(document).on('click', '.show-less-comments', function (e) {
+        e.preventDefault();
         var postId = $(this).data('post-id');
-
-        // Hide extra comments and switch back to "Show More"
-        $(this).siblings('.more-comments').hide();
-        $(this).siblings('.show-more-comments').show();
-        $(this).hide();
+        $(`#comments-${postId} .more-comments p:gt(3)`).slideUp(); // Hide comments beyond the first 4
+        $(this).hide(); // Hide "Show Less"
+        $(this).siblings('.show-more-comments').show(); // Show "Show More"
     });
+
 
 
 

@@ -1,4 +1,3 @@
-
 body {
     font-family: Arial, sans-serif;
     margin: 0;
@@ -8,9 +7,9 @@ body {
 
 main {
     padding: 20px;
-    max-width: 1200px;
+    max-width: 800px;
     margin: auto;
-    /* Center main content */
+    text-align: left;
 }
 
 
@@ -77,14 +76,14 @@ main {
     margin-top: 20px;
     border-top: 1px solid #ddd;
     padding-top: 15px;
- 
+
 }
 
 .comments-section h4 {
     font-size: 18px;
     color: #333;
     margin-bottom: 10px;
-    
+
 }
 
 /* Textarea for adding comments */
@@ -233,11 +232,13 @@ main {
     display: flex;
     justify-content: center;
     gap: 20px;
-    margin:auto;
-    max-width: 800px; /* Limiting the width */
+    margin: auto;
+    max-width: 800px;
+    /* Limiting the width */
 }
 
-.category-filter, .date-filter {
+.category-filter,
+.date-filter {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -276,7 +277,8 @@ button#applyFilter {
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
     width: fit-content;
-    margin:  auto; /* Centering the button */
+    margin: auto;
+    /* Centering the button */
 }
 
 button#applyFilter:hover {
@@ -297,9 +299,12 @@ button#applyFilter:hover {
 
     select {
         width: 100%;
-        
+
     }
 }
 
-
-
+.more-comments {
+    max-height: 150px; /* Adjust this height to your preference */
+    overflow-y: auto;  /* Enable vertical scrolling */
+    margin-top: 10px;  /* Optional margin for spacing */
+}
