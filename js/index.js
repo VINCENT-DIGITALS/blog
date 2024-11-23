@@ -43,7 +43,12 @@ $(document).ready(function () {
             success: function (result) {
                 try {
                     var datas = JSON.parse(result);
-
+                    // Sort the data by 'created_at' timestamp (newest first)
+                    datas.sort((a, b) => {
+                        const dateA = new Date(a.created_at);
+                        const dateB = new Date(b.created_at);
+                        return dateB - dateA; // Descending order
+                    });
                     var grid = ``;
                     if (datas.length === 0) {
                         grid = '<p>No blogs found.</p>';

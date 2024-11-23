@@ -23,6 +23,11 @@ $blogs = $mydb->select('posts');
         $isLoggedIn = true; // User is logged in if 'user_id' is set
         $isAdmin = (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') ? 'admin' : null; // Check if user is admin
         $visitor_id = null;
+
+        // Print the variables to the browser
+        echo "<pre>";
+        var_dump($user_id, $isLoggedIn, $isAdmin, $visitor_id);
+        echo "</pre>";
     } else {
         $user_id = null;
         $isLoggedIn = false; // Not logged in if 'user_id' is not set

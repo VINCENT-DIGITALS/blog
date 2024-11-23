@@ -10,6 +10,7 @@ if (!isset($_SESSION['visitor_id'])) {
 function loginUserSession($userData, $role)
 {
     $_SESSION['user_id'] = $userData['id'];
+    $_SESSION['username'] = $userData['username'];
     $_SESSION['email'] = $userData['email'];
     $_SESSION['role'] = $role; // Store the user's role (admin/user)
     unset($_SESSION['visitor_id']); // Clear visitor ID when the user logs in

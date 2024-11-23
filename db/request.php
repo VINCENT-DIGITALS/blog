@@ -2,15 +2,52 @@
 ini_set('display_errors', 0);  // Prevent errors from displaying in the output
 ini_set('log_errors', 1);      // Enable logging errors
 error_reporting(E_ALL);        // Report all PHP errors
+// header("Access-Control-Allow-Origin: *");
+// header("Content-Type: application/json");
 
-include 'session.php';
 require "db.php";
 $mydb = new myDB();
 include 'session_manager.php'; // Include session management
 
 
+// header('Content-Type: application/json'); // Always respond with JSON
 
-// Function to validate if email is a Gmail account
+if (isset($_POST['facebook_login'])) {
+    $userId = $_POST['id'] ?? null;
+    $userName = $_POST['username'] ?? null;
+    $userEmail = $_POST['email'] ?? null;
+
+    if (!$userId || !$userName || !$userEmail) {
+        echo json_encode(["status" => "error", "message" => "Missing required fields"]);
+        exit;
+    }
+
+    // Example user login/registration logic
+    $existingUser = $mydb->loginUser('users', '*', ['provider_id' => $userId]);
+
+    if ($existingUser) {
+        loginUserSession($existingUser, 'user'); // Store as 'user'
+        echo "Login Success";
+    } else {
+        $newUser = [
+            'provider' => 'facebook',
+            'provider_id' => $userId,
+            'username' => $userName,
+            'email' => $userEmail,
+            'created_at' => date('Y-m-d H:i:s')
+        ];
+
+        $isAdded = $mydb->add_user('users', $newUser);
+        loginUserSession($newUser, 'user'); // Store as 'user'
+        if ($isAdded) {
+            echo "New Login Success";
+        } else {
+            echo "Something Went Wrong";
+        }
+    }
+} 
+
+
 function isValidGmail($email)
 {
     return filter_var($email, FILTER_VALIDATE_EMAIL) && strpos($email, '@gmail.com') !== false;

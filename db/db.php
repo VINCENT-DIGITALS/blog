@@ -8,6 +8,7 @@ final class myDB
     private $username  = "root";
     private $password  = "";
     private $db_name  = "blog_db";
+    private $userTbl    = 'users';
     public $res;
     private $conn;
 
@@ -48,20 +49,20 @@ final class myDB
         try {
             $stmtupdate = $this->conn->prepare("UPDATE posts SET likes_count = $update WHERE id = ?");
             $stmtupdate->bind_param("i", $post_id);
-    
+
             if ($stmtupdate->execute()) {
                 error_log("Successfully updated likes for post ID: $post_id.");
             } else {
                 error_log("Failed to update likes for post ID: $post_id");
             }
-    
+
             $stmtupdate->close();
         } catch (Exception $e) {
             error_log("Error updating likes count: " . $e->getMessage());
         }
     }
-    
-    
+
+
 
     public function updateLikesCount($postId)
     {
@@ -153,11 +154,12 @@ final class myDB
         }
     }
 
-    public function select($table, $row = "*", $where = NULL, $search = NULL) {
+    public function select($table, $row = "*", $where = NULL, $search = NULL)
+    {
         try {
             $conditions = [];
             $types = "";
-    
+
             // Exact matches (WHERE clause)
             if (!is_null($where)) {
                 foreach ($where as $key => $value) {
@@ -165,7 +167,7 @@ final class myDB
                     $types .= substr(gettype($value), 0, 1);
                 }
             }
-    
+
             // Search (LIKE clause)
             if (!is_null($search)) {
                 foreach ($search as $key => $value) {
@@ -174,25 +176,25 @@ final class myDB
                     $search[$key] = "%" . $value . "%";
                 }
             }
-    
+
             // Build the query dynamically based on conditions
             $query = "SELECT $row FROM $table";
             if (!empty($conditions)) {
                 $query .= " WHERE " . implode(" AND ", $conditions);
             }
-    
+
             $stmt = $this->conn->prepare($query);
             if (!empty($conditions)) {
                 $stmt->bind_param($types, ...array_values(array_merge($where ?? [], $search ?? [])));
             }
-    
+
             $stmt->execute();
             $this->res = $stmt->get_result();
         } catch (Exception $e) {
             die("Error requesting Data!. <br>" . $e);
         }
     }
-    
+
 
 
     // Helper function to check if a record exists
@@ -372,5 +374,62 @@ final class myDB
         } catch (Exception $e) {
             die("Error while checking email existence. <br>" . $e->getMessage());
         }
+    }
+
+
+    function checkUser($data = array())
+    {
+        if (!empty($data)) {
+            // Check whether the user already exists in the database 
+            $checkQuery = "SELECT * FROM " . $this->userTbl . " WHERE oauth_provider = '" . $data['oauth_provider'] . "' AND oauth_uid = '" . $data['oauth_uid'] . "'";
+            $checkResult = $this->conn->query($checkQuery);
+
+            // Add modified time to the data array 
+            if (!array_key_exists('modified', $data)) {
+                $data['modified'] = date("Y-m-d H:i:s");
+            }
+
+            if ($checkResult->num_rows > 0) {
+                // Prepare column and value format 
+                $colvalSet = '';
+                $i = 0;
+                foreach ($data as $key => $val) {
+                    $pre = ($i > 0) ? ', ' : '';
+                    $colvalSet .= $pre . $key . "='" . $this->conn->real_escape_string($val) . "'";
+                    $i++;
+                }
+                $whereSql = " WHERE oauth_provider = '" . $data['oauth_provider'] . "' AND oauth_uid = '" . $data['oauth_uid'] . "'";
+
+                // Update user data in the database 
+                $query = "UPDATE " . $this->userTbl . " SET " . $colvalSet . $whereSql;
+                $update = $this->conn->query($query);
+            } else {
+                // Add created time to the data array 
+                if (!array_key_exists('created', $data)) {
+                    $data['created'] = date("Y-m-d H:i:s");
+                }
+
+                // Prepare column and value format 
+                $columns = $values = '';
+                $i = 0;
+                foreach ($data as $key => $val) {
+                    $pre = ($i > 0) ? ', ' : '';
+                    $columns .= $pre . $key;
+                    $values  .= $pre . "'" . $this->conn->real_escape_string($val) . "'";
+                    $i++;
+                }
+
+                // Insert user data in the database 
+                $query = "INSERT INTO " . $this->userTbl . " (" . $columns . ") VALUES (" . $values . ")";
+                $insert = $this->conn->query($query);
+            }
+
+            // Get user data from the database 
+            $result = $this->conn->query($checkQuery);
+            $userData = $result->fetch_assoc();
+        }
+
+        // Return user data 
+        return !empty($userData) ? $userData : false;
     }
 }

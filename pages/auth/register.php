@@ -115,6 +115,11 @@
         <input type="password" id="password" name="Cpassword" placeholder="Confirm Password" required><br>
         <div id="responseMessage" style="display: none;"></div>
         <button type="submit" name="add_user">Login</button><br>
+        <div>
+    <button id="facebookLogin" type="button">Sign up with Facebook</button><br>
+    <button id="googleLogin" type="button">Sign up with Google</button><br>
+</div>
+
         <a class="guest" href="/Blog/pages/auth/logout.php">Guest</a><br>
         <div class="footer">Already have an account? <a  href="/Blog/pages/auth/login.php">Login here</a></div>
     </form>

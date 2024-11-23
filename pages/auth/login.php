@@ -7,7 +7,7 @@
     <title>Login Form</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        /* Reset some basic styles */
+        /* Reset basic styles */
         * {
             margin: 0;
             padding: 0;
@@ -16,19 +16,30 @@
 
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
+            background: linear-gradient(to bottom right, #4CAF50, #2F8F50);
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px 30px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4CAF50;
         }
 
         form {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-            width: 300px;
             text-align: center;
         }
 
@@ -38,9 +49,9 @@
             padding: 10px;
             margin: 10px 0;
             border: 1px solid #ccc;
-            border-radius: 10px; /* Rounded corners */
+            border-radius: 10px;
         }
-        
+
         button {
             width: 100%;
             padding: 12px;
@@ -78,9 +89,39 @@
             text-decoration: underline;
         }
 
-        .msg {
-            color: red;
-            font-size: 14px;
+        .social-login {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .social-login button {
+            width: 100%;
+            margin-bottom: 10px;
+            padding: 10px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .facebook-login-button {
+            background-color: #4267B2;
+            color: white;
+            border: none;
+        }
+
+        .facebook-login-button:hover {
+            background-color: #365899;
+        }
+
+        .google-login-button {
+            background-color: #DB4437;
+            color: white;
+            border: none;
+        }
+
+        .google-login-button:hover {
+            background-color: #C23321;
         }
 
         #responseMessage {
@@ -89,21 +130,36 @@
             color: #4CAF50;
         }
     </style>
+
+    <script async defer crossorigin="anonymous"
+        src="https://connect.facebook.net/en_US/sdk.js"></script>
+
 </head>
 
 <body>
-    <form id="loginForm" method="post" action="/Blog/db/request.php">
+    <div class="container">
         <h2>User Login</h2>
-        
-        <input type="text" id="email" name="email" placeholder="Email" required><br>
-        <input type="password" id="password" name="password" placeholder="Password" required><br>
-        <div id="responseMessage" style="display: none;"></div>
-        <button type="submit" name="find_user">Login</button><br>
-        <a href="/Blog/pages/auth/logout.php">Guest</a><br>
-        <a href="/Blog/pages/auth/register.php">Sign up</a><br>
-    </form>
+        <form id="loginForm" method="post" action="/Blog/db/request.php">
+            <input type="text" id="email" name="email" placeholder="Email" required><br>
+            <input type="password" id="password" name="password" placeholder="Password" required><br>
+            <div id="responseMessage" style="display: none;"></div>
+            <div id="status"></div>
+            <button type="submit" name="find_user">Login</button><br>
+            <a href="/Blog/pages/auth/logout.php">Guest</a><br>
+            <a href="/Blog/pages/auth/register.php">Sign up</a>
+        </form>
 
+        <div class="social-login">
+            <!-- Custom Facebook Login Button -->
+            <button id="customFacebookLogin" class="facebook-login-button">
+                Login with Facebook
+            </button>
 
+            <button class="google-login-button" id="googleLogin">
+                Login with Google
+            </button>
+        </div>
+    </div>
 
     <script src="/Blog/js/main.js"></script>
 </body>
