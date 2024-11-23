@@ -1,3 +1,49 @@
+// Google Sign-In Credential Response Handler
+function handleCredentialResponse(response) {
+    if (!response || !response.credential) {
+        console.error("Invalid response received");
+        alert("Authentication failed. Please try again.");
+        return;
+    }
+
+    // Prepare serialized data
+    var datas = [
+        { name: 'google_login', value: true }, // Custom key to identify the action
+        { name: 'credential', value: response.credential }, // Pass the credential token directly
+    ];
+
+    var data_array = {};
+    $.map(datas, function (data) {
+        data_array[data['name']] = data['value'];
+    });
+
+    // Send AJAX request to the server
+    $.ajax({
+        url: '../../db/request.php', // Replace with your server's endpoint
+        type: 'POST',
+        data: {
+            'google_login': true, // Custom key to identify the action
+            ...data_array,
+        },
+        success: function (data) {
+            if (data.includes("Login Success")) {
+                // Pass the redirect URL to the success message
+                showResponseMessage("Login Success!", "success", "../../index.php");
+
+            } else if (data.includes("Something Went Wrong")) {
+                showResponseMessage("Something Went Wrong", "error");
+            } else if (data.includes("New Login Success")) {
+                showResponseMessage("New account Created! Login Success!", "success", "../../index.php");
+            }
+            else {
+                showResponseMessage("Unexpected response!", "error");
+            }
+        },
+        error: function (error) {
+            showResponseMessage("An error occurred!", "error");
+        }
+    });
+}
 
 
 
@@ -17,14 +63,39 @@ $("#loginForm").on("submit", function (e) {
             ...data_array,
         },
         success: function (data) {
-            if (data.includes("Login Success")) {
-                // Pass the redirect URL to the success message
-                showResponseMessage("Login Success!", "success", "../../index.php");
-
-            } else if (data.includes("Invalid email or password")) {
-                showResponseMessage("Invalid email or password!", "error");
+            try {
+                if (!data) {
+                    throw new Error("Empty response from server");
+                }
+        
+                var responseData = JSON.parse(data);
+        
+                if (responseData.status == 1) {
+                    let responsePayload = responseData.pdata;
+        
+                    let profileHTML = `
+                        <h3>Welcome ${responsePayload.given_name}!
+                            <a href="javascript:void(0);" onclick="signOut('${responsePayload.sub}');">Sign out</a>
+                        </h3>
+                        <img src="${responsePayload.picture}" />
+                        <p><b>Auth ID: </b>${responsePayload.sub}</p>
+                        <p><b>Name: </b>${responsePayload.name}</p>
+                        <p><b>Email: </b>${responsePayload.email}</p>
+                    `;
+        
+                    $(".pro-data").html(profileHTML);
+                    $("#btnWrap").addClass("hidden");
+                    $(".pro-data").removeClass("hidden");
+                } else {
+                    console.error("Unexpected server response:", responseData);
+                    alert("An error occurred. Please try again.");
+                }
+            } catch (e) {
+                console.error("Error parsing response:", e, data);
+                alert("Failed to process server response.");
             }
         },
+        
         error: function (error) {
             text("An error occurred!").fadeIn(300).delay(2000).fadeOut(500);
         }
@@ -136,10 +207,6 @@ function fetchUserInfo(authResponse) {
 
 
 
-// Google Login
-$("#googleLogin").on("click", function () {
-    window.location.href = "/Blog/services/google-login-callback.php"; // Redirect to Google login handler
-});
 
 
 $("#adminloginForm").on("submit", function (e) {

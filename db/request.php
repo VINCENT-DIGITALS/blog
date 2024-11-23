@@ -10,6 +10,7 @@ $mydb = new myDB();
 include 'session_manager.php'; // Include session management
 
 
+
 // header('Content-Type: application/json'); // Always respond with JSON
 
 if (isset($_POST['facebook_login'])) {
@@ -38,15 +39,118 @@ if (isset($_POST['facebook_login'])) {
         ];
 
         $isAdded = $mydb->add_user('users', $newUser);
-        loginUserSession($newUser, 'user'); // Store as 'user'
+        // loginUserSession($newUser, 'user'); // Store as 'user'
         if ($isAdded) {
+            // Example user login/registration logic
+            $existingUser = $mydb->loginUser('users', '*', ['provider_id' => $userId]);
+
+            if ($existingUser) {
+                loginUserSession($existingUser, 'user'); // Store as 'user'
+                echo "Login Success";
+            }
             echo "New Login Success";
         } else {
             echo "Something Went Wrong";
         }
     }
-} 
+}
 
+
+if (isset($_POST['google_login'])) {
+    $credential = $_POST['credential'] ?? null;
+
+    if (!$credential) {
+        echo json_encode(["status" => "error", "message" => "Missing credential"]);
+        exit;
+    }
+
+    // Verify the credential token with Google's API
+    $google_api_url = "https://oauth2.googleapis.com/tokeninfo?id_token=" . urlencode($credential);
+    $response = file_get_contents($google_api_url);
+    $userInfo = json_decode($response, true);
+
+    if (isset($userInfo['sub'])) {
+        // Extract user data
+        $userId = $userInfo['sub'];
+        $userName = $userInfo['name'] ?? "Unknown";
+        $userEmail = $userInfo['email'] ?? "Unknown";
+        $userPicture = $userInfo['picture'] ?? "";
+
+        // Example user login/registration logic
+        $existingUser = $mydb->loginUser('users', '*', ['provider_id' => $userId]);
+
+        if ($existingUser) {
+            // Log in existing user
+            loginUserSession($existingUser, 'user'); // Store as 'user'
+            echo "Login Success";
+        } else {
+            // Register new user
+            $newUser = [
+                'provider' => 'google',
+                'provider_id' => $userId,
+                'username' => $userName,
+                'email' => $userEmail,
+                'created_at' => date('Y-m-d H:i:s')
+            ];
+
+            $isAdded = $mydb->add_user('users', $newUser);
+            // loginUserSession($newUser, 'user'); // Store as 'user'
+
+            if ($isAdded) {
+                // Example user login/registration logic
+                $existingUser = $mydb->loginUser('users', '*', ['provider_id' => $userId]);
+
+                if ($existingUser) {
+                    // Log in existing user
+                    loginUserSession($existingUser, 'user'); // Store as 'user'
+                    echo "Login Success";
+                }
+                echo "New Login Success";
+            } else {
+                echo "Something Went Wrong";
+            }
+        }
+    } else {
+        // Invalid token
+        echo json_encode(["status" => "error", "message" => "Invalid token"]);
+    }
+}
+
+
+
+
+// if (isset($_POST['google_login'])) {
+//     $id = $_POST['id'];
+//     $username = $_POST['username'];
+//     $email = $_POST['email'];
+//     if (!$userId || !$userName || !$userEmail) {
+//         echo json_encode(["status" => "error", "message" => "Missing required fields"]);
+//         exit;
+//     }
+//     // Example user login/registration logic
+//     $existingUser = $mydb->loginUser('users', '*', ['provider_id' => $userId]);
+
+//     if ($existingUser) {
+//         loginUserSession($existingUser, 'user'); // Store as 'user'
+//         echo "Login Success";
+//     } else {
+//         $newUser = [
+//             'provider' => 'google',
+//             'provider_id' => $userId,
+//             'username' => $userName,
+//             'email' => $userEmail,
+//             'created_at' => date('Y-m-d H:i:s')
+//         ];
+
+//         $isAdded = $mydb->add_user('users', $newUser);
+//         loginUserSession($newUser, 'user'); // Store as 'user'
+//         if ($isAdded) {
+//             echo "New Login Success";
+//         } else {
+//             echo "Something Went Wrong";
+//         }
+//     }
+// } 
 
 function isValidGmail($email)
 {

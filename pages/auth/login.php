@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Form</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
     <style>
         /* Reset basic styles */
         * {
@@ -129,10 +131,16 @@
             font-size: 16px;
             color: #4CAF50;
         }
+
+        .hidden {
+            display: none;
+        }
     </style>
 
     <script async defer crossorigin="anonymous"
         src="https://connect.facebook.net/en_US/sdk.js"></script>
+
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 </head>
 
@@ -145,7 +153,7 @@
             <div id="responseMessage" style="display: none;"></div>
             <div id="status"></div>
             <button type="submit" name="find_user">Login</button><br>
-            <a href="/Blog/pages/auth/logout.php">Guest</a><br>
+            <a href="/Blog/pages/auth/logout.php">Guest |</a>
             <a href="/Blog/pages/auth/register.php">Sign up</a>
         </form>
 
@@ -154,10 +162,27 @@
             <button id="customFacebookLogin" class="facebook-login-button">
                 Login with Facebook
             </button>
+           
+            <!-- Sign In With Google button with HTML data attributes API -->
+            <div id="g_id_onload"
+                data-client_id="624367051637-26ok23b3casi34oeo728ee1jltjb04bo.apps.googleusercontent.com"
+                data-context="signin"
+                data-ux_mode="popup"
+                data-callback="handleCredentialResponse"
+                data-auto_prompt="false">
+            </div>
 
-            <button class="google-login-button" id="googleLogin">
-                Login with Google
-            </button>
+            <div class="g_id_signin"
+                data-type="standard"
+                data-shape="rectangular"
+                data-theme="outline"
+                data-text="signin_with"
+                data-size="large"
+                data-logo_alignment="left">
+            </div>
+            <!-- User Profile Display -->
+
+            <div class="pro-data hidden"></div>
         </div>
     </div>
 
